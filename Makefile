@@ -3,11 +3,24 @@
 build:
 	scripts/build/build.sh
 
-# run unit tests for go code
+# clean built binaries
+.PHONY: clean
+clean:
+	scripts/build/clean.sh
+
+# run tests for go code
 .PHONY: test
-test:
-	scripts/testing/static-analysis.sh
+test: lint unit-test
+
+# run unit tests for go code
+.PHONY: unit-test
+unit-test:
 	scripts/testing/unit-tests.sh
+
+# run unit tests for go code
+.PHONY: lint 
+lint:
+	scripts/testing/static-analysis.sh
 
 # generate mocks
 .PHONY: mocks
