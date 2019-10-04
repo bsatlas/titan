@@ -19,7 +19,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case "GET", "HEAD":
 		statusCode = 404
-		return
 	default:
 		statusCode = 501
 	}

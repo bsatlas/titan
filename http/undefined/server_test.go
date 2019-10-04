@@ -44,10 +44,10 @@ func setupServerTestComponents(t *testing.T,
 	return cmp
 }
 
-func TestServerUndefinedPath(t *testing.T) {
+func TestServerMethodGet(t *testing.T) {
 	request := &http.Request{
 		URL: &url.URL{
-			Path: "/unknown/path",
+			Path: "/",
 		},
 		Method: "GET",
 		Body:   nil,
@@ -55,5 +55,51 @@ func TestServerUndefinedPath(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	cmp := setupServerTestComponents(t, ctrl)
+	cmp.responseWriter.EXPECT().WriteHeader(404)
+	cmp.server.ServeHTTP(cmp.responseWriter, request)
+}
+
+func TestServerMethodHead(t *testing.T) {
+	request := &http.Request{
+		URL: &url.URL{
+			Path: "/",
+		},
+		Method: "HEAD",
+		Body:   nil,
+	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	cmp := setupServerTestComponents(t, ctrl)
+	cmp.responseWriter.EXPECT().WriteHeader(404)
+	cmp.server.ServeHTTP(cmp.responseWriter, request)
+}
+
+func TestServerMethodPost(t *testing.T) {
+	request := &http.Request{
+		URL: &url.URL{
+			Path: "/",
+		},
+		Method: "POST",
+		Body:   nil,
+	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	cmp := setupServerTestComponents(t, ctrl)
+	cmp.responseWriter.EXPECT().WriteHeader(501)
+	cmp.server.ServeHTTP(cmp.responseWriter, request)
+}
+
+func TestServerMethodPut(t *testing.T) {
+	request := &http.Request{
+		URL: &url.URL{
+			Path: "/",
+		},
+		Method: "PUT",
+		Body:   nil,
+	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	cmp := setupServerTestComponents(t, ctrl)
+	cmp.responseWriter.EXPECT().WriteHeader(501)
 	cmp.server.ServeHTTP(cmp.responseWriter, request)
 }
