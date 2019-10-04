@@ -14,6 +14,7 @@ import (
 
 type serverTestComponents struct {
 	server           *live.Server
+	core             *mock.Liveness
 	undefinedHandler *mock.Handler
 	responseWriter   *mock.ResponseWriter
 	types            serverTestMatchers
@@ -28,6 +29,7 @@ func setupServerTestComponents(t *testing.T,
 	ctrl *gomock.Controller) serverTestComponents {
 	t.Helper()
 	cmp := serverTestComponents{
+		core:             mock.NewLiveness(ctrl),
 		undefinedHandler: mock.NewHandler(ctrl),
 		responseWriter:   mock.NewResponseWriter(ctrl),
 		types: serverTestMatchers{
@@ -38,6 +40,7 @@ func setupServerTestComponents(t *testing.T,
 	opts := []live.ServerOption{
 		live.OptionMetricsCollector(metrics.NewCollector()),
 		live.OptionUndefinedHandler(cmp.undefinedHandler),
+		live.OptionCore(cmp.core),
 	}
 	server, err := live.NewServer(opts...)
 	if err != nil {
@@ -58,6 +61,44 @@ func TestServerUndefinedPath(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	cmp := setupServerTestComponents(t, ctrl)
-	cmp.undefinedHandler.EXPECT().ServeHTTP(cmp.types.responseWriter, cmp.types.request)
+	cmp.undefinedHandler.EXPECT().ServeHTTP(
+		cmp.types.responseWriter, cmp.types.request,
+	)
+	cmp.server.ServeHTTP(cmp.responseWriter, request)
+}
+
+func TestServerLiveOK(t *testing.T) {
+	request := &http.Request{
+		URL: &url.URL{
+			Path: "/",
+		},
+		Method: "GET",
+		Body:   nil,
+	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	cmp := setupServerTestComponents(t, ctrl)
+	gomock.InOrder(
+		cmp.core.EXPECT().Live().Return(true),
+		cmp.responseWriter.EXPECT().WriteHeader(200),
+	)
+	cmp.server.ServeHTTP(cmp.responseWriter, request)
+}
+
+func TestServerLiveNotOK(t *testing.T) {
+	request := &http.Request{
+		URL: &url.URL{
+			Path: "/",
+		},
+		Method: "GET",
+		Body:   nil,
+	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	cmp := setupServerTestComponents(t, ctrl)
+	gomock.InOrder(
+		cmp.core.EXPECT().Live().Return(false),
+		cmp.responseWriter.EXPECT().WriteHeader(404),
+	)
 	cmp.server.ServeHTTP(cmp.responseWriter, request)
 }

@@ -10,6 +10,14 @@ import (
 // ServerOption applies a parameter to a Server.
 type ServerOption func(*Server)
 
+// OptionCore sets the core to use for Liveness checks.
+func OptionCore(core Liveness) ServerOption {
+	var fn ServerOption = func(s *Server) {
+		s.core = core
+	}
+	return fn
+}
+
 // OptionMetricsCollector sets the http.Handler to use for the metrics endpoint.
 func OptionMetricsCollector(collector *metrics.Collector) ServerOption {
 	var fn ServerOption = func(s *Server) {
@@ -31,6 +39,9 @@ func NewServer(options ...ServerOption) (*Server, error) {
 	srv := &Server{}
 	for _, addOption := range options {
 		addOption(srv)
+	}
+	if srv.core == nil {
+		return nil, errors.New("no core defined")
 	}
 	if srv.metrics == nil {
 		return nil, errors.New("no metrics collector defined")
