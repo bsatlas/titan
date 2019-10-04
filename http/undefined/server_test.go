@@ -44,7 +44,7 @@ func setupServerTestComponents(t *testing.T,
 	return cmp
 }
 
-func TestServerUnknownPath(t *testing.T) {
+func TestServerUndefinedPath(t *testing.T) {
 	request := &http.Request{
 		URL: &url.URL{
 			Path: "/unknown/path",

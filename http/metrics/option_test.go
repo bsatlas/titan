@@ -10,7 +10,7 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
-func TestNewServerNoUnknownHandler(t *testing.T) {
+func TestNewServerNoUndefinedHandler(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	opts := []metrics.ServerOption{
