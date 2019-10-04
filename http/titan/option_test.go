@@ -10,7 +10,7 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
-func TestNewServerNoUnknownHandler(t *testing.T) {
+func TestNewServerNoUndefinedHandler(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	opts := []titan.ServerOption{
@@ -33,7 +33,7 @@ func TestNewServerNoOCIHandler(t *testing.T) {
 		titan.OptionMetricsHandler(mock.NewHandler(ctrl)),
 		titan.OptionLiveHandler(mock.NewHandler(ctrl)),
 		titan.OptionReadyHandler(mock.NewHandler(ctrl)),
-		titan.OptionUnknownHandler(mock.NewHandler(ctrl)),
+		titan.OptionUndefinedHandler(mock.NewHandler(ctrl)),
 		titan.OptionMetricsCollector(metrics.NewCollector()),
 	}
 	_, err := titan.NewServer(opts...)
@@ -49,7 +49,7 @@ func TestNewServerNoMetricsHandler(t *testing.T) {
 		titan.OptionOCIHandler(mock.NewHandler(ctrl)),
 		titan.OptionLiveHandler(mock.NewHandler(ctrl)),
 		titan.OptionReadyHandler(mock.NewHandler(ctrl)),
-		titan.OptionUnknownHandler(mock.NewHandler(ctrl)),
+		titan.OptionUndefinedHandler(mock.NewHandler(ctrl)),
 		titan.OptionMetricsCollector(metrics.NewCollector()),
 	}
 	_, err := titan.NewServer(opts...)
@@ -65,7 +65,7 @@ func TestNewServerNoReadyHandler(t *testing.T) {
 		titan.OptionOCIHandler(mock.NewHandler(ctrl)),
 		titan.OptionLiveHandler(mock.NewHandler(ctrl)),
 		titan.OptionMetricsHandler(mock.NewHandler(ctrl)),
-		titan.OptionUnknownHandler(mock.NewHandler(ctrl)),
+		titan.OptionUndefinedHandler(mock.NewHandler(ctrl)),
 		titan.OptionMetricsCollector(metrics.NewCollector()),
 	}
 	_, err := titan.NewServer(opts...)
@@ -81,7 +81,7 @@ func TestNewServerNoLiveHandler(t *testing.T) {
 		titan.OptionOCIHandler(mock.NewHandler(ctrl)),
 		titan.OptionMetricsHandler(mock.NewHandler(ctrl)),
 		titan.OptionReadyHandler(mock.NewHandler(ctrl)),
-		titan.OptionUnknownHandler(mock.NewHandler(ctrl)),
+		titan.OptionUndefinedHandler(mock.NewHandler(ctrl)),
 		titan.OptionMetricsCollector(metrics.NewCollector()),
 	}
 	_, err := titan.NewServer(opts...)
@@ -97,7 +97,7 @@ func TestNewServerNoMetricsCollector(t *testing.T) {
 		titan.OptionOCIHandler(mock.NewHandler(ctrl)),
 		titan.OptionLiveHandler(mock.NewHandler(ctrl)),
 		titan.OptionReadyHandler(mock.NewHandler(ctrl)),
-		titan.OptionUnknownHandler(mock.NewHandler(ctrl)),
+		titan.OptionUndefinedHandler(mock.NewHandler(ctrl)),
 		titan.OptionMetricsHandler(mock.NewHandler(ctrl)),
 	}
 	_, err := titan.NewServer(opts...)

@@ -15,11 +15,11 @@ type Server struct {
 }
 
 type handlers struct {
-	metrics http.Handler
-	live    http.Handler
-	ready   http.Handler
-	oci     http.Handler
-	unknown http.Handler
+	metrics   http.Handler
+	live      http.Handler
+	ready     http.Handler
+	oci       http.Handler
+	undefined http.Handler
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -44,7 +44,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		handler.ServeHTTP(w, req)
 		return
 	default:
-		handler = s.handlers.unknown
+		handler = s.handlers.undefined
 		handler.ServeHTTP(w, req)
 		return
 	}

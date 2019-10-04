@@ -49,7 +49,7 @@ func setupServerTestComponents(t *testing.T,
 		titan.OptionLiveHandler(cmp.liveHandler),
 		titan.OptionReadyHandler(cmp.readyHandler),
 		titan.OptionMetricsHandler(cmp.metricsHandler),
-		titan.OptionUnknownHandler(cmp.unknownHandler),
+		titan.OptionUndefinedHandler(cmp.unknownHandler),
 	}
 	server, err := titan.NewServer(opts...)
 	if err != nil {

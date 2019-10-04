@@ -50,10 +50,10 @@ func OptionReadyHandler(handler http.Handler) ServerOption {
 	return fn
 }
 
-// OptionUnknownHandler sets the http.Handler to use for the unknown endpoint.
-func OptionUnknownHandler(handler http.Handler) ServerOption {
+// OptionUndefinedHandler sets the http.Handler to use for the unknown endpoint.
+func OptionUndefinedHandler(handler http.Handler) ServerOption {
 	var fn ServerOption = func(s *Server) {
-		s.handlers.unknown = handler
+		s.handlers.undefined = handler
 	}
 	return fn
 }
@@ -79,8 +79,8 @@ func NewServer(options ...ServerOption) (*Server, error) {
 	if srv.handlers.ready == nil {
 		return nil, errors.New("no ready handler defined")
 	}
-	if srv.handlers.unknown == nil {
-		return nil, errors.New("no unknown handler defined")
+	if srv.handlers.undefined == nil {
+		return nil, errors.New("no undefined handler defined")
 	}
 	return srv, nil
 }
