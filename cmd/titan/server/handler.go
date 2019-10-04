@@ -7,7 +7,7 @@ import (
 	"github.com/atlaskerr/titan/http/oci"
 	"github.com/atlaskerr/titan/http/ready"
 	"github.com/atlaskerr/titan/http/titan"
-	"github.com/atlaskerr/titan/http/unknown"
+	"github.com/atlaskerr/titan/http/undefined"
 )
 
 func titanHandler(s *service) error {
@@ -17,7 +17,7 @@ func titanHandler(s *service) error {
 		titan.OptionLiveHandler(s.handlers.live),
 		titan.OptionReadyHandler(s.handlers.ready),
 		titan.OptionMetricsHandler(s.handlers.metrics),
-		titan.OptionUnknownHandler(s.handlers.unknown),
+		titan.OptionUndefinedHandler(s.handlers.undefined),
 	}
 	h, err := titan.NewServer(opts...)
 	if err != nil {
@@ -28,25 +28,52 @@ func titanHandler(s *service) error {
 }
 
 func liveHandler(s *service) error {
-	h := &live.Server{}
+	opts := []live.ServerOption{
+		live.OptionMetricsCollector(s.collector),
+		live.OptionUndefinedHandler(s.handlers.undefined),
+	}
+	h, err := live.NewServer(opts...)
+	if err != nil {
+		return fmt.Errorf("failed to initialize live endpoint: %s", err)
+	}
 	s.handlers.live = h
 	return nil
 }
 
 func readyHandler(s *service) error {
-	h := &ready.Server{}
+	opts := []ready.ServerOption{
+		ready.OptionMetricsCollector(s.collector),
+		ready.OptionUndefinedHandler(s.handlers.undefined),
+	}
+	h, err := ready.NewServer(opts...)
+	if err != nil {
+		return fmt.Errorf("failed to initialize ready endpoint: %s", err)
+	}
 	s.handlers.ready = h
 	return nil
 }
 
 func ociHandler(s *service) error {
-	h := &oci.Server{}
+	opts := []oci.ServerOption{
+		oci.OptionMetricsCollector(s.collector),
+		oci.OptionUndefinedHandler(s.handlers.undefined),
+	}
+	h, err := oci.NewServer(opts...)
+	if err != nil {
+		return fmt.Errorf("failed to initialize oci endpoint: %s", err)
+	}
 	s.handlers.oci = h
 	return nil
 }
 
-func unknownHandler(s *service) error {
-	h := &unknown.Server{}
-	s.handlers.unknown = h
+func undefinedHandler(s *service) error {
+	opts := []undefined.ServerOption{
+		undefined.OptionMetricsCollector(s.collector),
+	}
+	h, err := undefined.NewServer(opts...)
+	if err != nil {
+		return fmt.Errorf("failed to initialize unknown endpoint: %s", err)
+	}
+	s.handlers.undefined = h
 	return nil
 }

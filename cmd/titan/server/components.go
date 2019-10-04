@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/atlaskerr/titan/http/live"
@@ -9,7 +8,7 @@ import (
 	"github.com/atlaskerr/titan/http/oci"
 	"github.com/atlaskerr/titan/http/ready"
 	"github.com/atlaskerr/titan/http/titan"
-	"github.com/atlaskerr/titan/http/unknown"
+	"github.com/atlaskerr/titan/http/undefined"
 	titanMetrics "github.com/atlaskerr/titan/metrics"
 )
 
@@ -21,16 +20,12 @@ type service struct {
 }
 
 type handlers struct {
-	titan   *titan.Server
-	oci     *oci.Server
-	metrics *metrics.Server
-	live    *live.Server
-	ready   *ready.Server
-	unknown *unknown.Server
-}
-
-func (s *service) shutdown(ctx context.Context) error {
-	return nil
+	titan     *titan.Server
+	oci       *oci.Server
+	metrics   *metrics.Server
+	live      *live.Server
+	ready     *ready.Server
+	undefined *undefined.Server
 }
 
 func newService() (*service, error) {
@@ -39,7 +34,7 @@ func newService() (*service, error) {
 	// need to start and stop components running in goroutines and whatnot.
 	components := []component{
 		collector,
-		unknownHandler,
+		undefinedHandler,
 		liveHandler,
 		readyHandler,
 		ociHandler,

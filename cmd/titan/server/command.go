@@ -74,7 +74,3 @@ func listener() (net.Listener, error) {
 	}
 	return ln, nil
 }
-
-func server() (*titan.Server, error) {
-	return &titan.Server{}, nil
-}
