@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"bytes"
 	"compress/gzip"
 	"io"
 	"net/http"
@@ -18,7 +19,7 @@ import (
 
 // Server is titan's metrics endpoint.
 type Server struct {
-	gatherer prometheus.Gatherer
+	core     prometheus.Gatherer
 	handlers handlers
 	metrics  *metrics.Collector
 }
@@ -29,6 +30,12 @@ type handlers struct {
 
 var endpointLabel prometheus.Labels = map[string]string{
 	"endpoint": "metrics",
+}
+
+var bufferPool = sync.Pool{
+	New: func() interface{} {
+		return new(bytes.Buffer)
+	},
 }
 
 var gzipPool = sync.Pool{
@@ -57,7 +64,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		s.handlers.undefined.ServeHTTP(w, req)
 		return
 	}
-	mfs, err := s.gatherer.Gather()
+	mfs, err := s.core.Gather()
 	if err != nil {
 		// Ignore the error if the registry returns something
 		if len(mfs) == 0 {
@@ -65,29 +72,39 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 	}
+	buf := bufferPool.Get().(*bytes.Buffer)
+	defer func() {
+		buf.Reset()
+		bufferPool.Put(buf)
+	}()
+	var tmpw io.Writer
 	header := w.Header()
 	if gzipAccepted(req.Header) {
-		tmpw := w.(io.Writer)
 		header.Set("Content-Encoding", "gzip")
 		gz := gzipPool.Get().(*gzip.Writer)
-		defer gzipPool.Put(gz)
-
-		gz.Reset(tmpw)
-		defer gz.Close()
-
+		defer func() {
+			gzipPool.Put(gz)
+			gz.Close()
+		}()
+		gz.Reset(buf)
 		tmpw = gz
+	} else {
+		tmpw = buf
 	}
 	contentType := expfmt.Negotiate(req.Header)
-	enc := expfmt.NewEncoder(w, contentType)
+	enc := expfmt.NewEncoder(tmpw, contentType)
 	for _, mf := range mfs {
-		if err := enc.Encode(mf); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
+		enc.Encode(mf)
+	}
+	written, err := buf.WriteTo(w)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	header.Set("Content-Type", string(contentType))
 	statusCode = 200
 	w.WriteHeader(statusCode)
+	s.metrics.HTTP.ResponseSize.With(endpointLabel).Observe(float64(written))
 	requestLabels["code"] = strconv.Itoa(statusCode)
 	s.metrics.HTTP.TotalRequests.With(requestLabels).Inc()
 	requestDuration := time.Since(requestDurationStart).Seconds()
