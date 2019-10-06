@@ -3,10 +3,13 @@ package server
 import (
 	"fmt"
 
+	"github.com/atlaskerr/titan/http/blob"
 	"github.com/atlaskerr/titan/http/live"
+	"github.com/atlaskerr/titan/http/manifest"
 	"github.com/atlaskerr/titan/http/metrics"
 	"github.com/atlaskerr/titan/http/oci"
 	"github.com/atlaskerr/titan/http/ready"
+	"github.com/atlaskerr/titan/http/tag"
 	"github.com/atlaskerr/titan/http/titan"
 	"github.com/atlaskerr/titan/http/undefined"
 
@@ -77,9 +80,51 @@ func cmpMetricsHandler(s *service) error {
 	return nil
 }
 
+func cmpManifestHandler(s *service) error {
+	opts := []manifest.ServerOption{
+		manifest.OptionMetricsCollector(s.collector),
+		manifest.OptionUndefinedHandler(s.handlers.undefined),
+	}
+	h, err := manifest.NewServer(opts...)
+	if err != nil {
+		return fmt.Errorf("failed to initialize oci endpoint: %s", err)
+	}
+	s.handlers.manifest = h
+	return nil
+}
+
+func cmpBlobHandler(s *service) error {
+	opts := []blob.ServerOption{
+		blob.OptionMetricsCollector(s.collector),
+		blob.OptionUndefinedHandler(s.handlers.undefined),
+	}
+	h, err := blob.NewServer(opts...)
+	if err != nil {
+		return fmt.Errorf("failed to initialize oci endpoint: %s", err)
+	}
+	s.handlers.blob = h
+	return nil
+}
+
+func cmpTagHandler(s *service) error {
+	opts := []tag.ServerOption{
+		tag.OptionMetricsCollector(s.collector),
+		tag.OptionUndefinedHandler(s.handlers.undefined),
+	}
+	h, err := tag.NewServer(opts...)
+	if err != nil {
+		return fmt.Errorf("failed to initialize oci endpoint: %s", err)
+	}
+	s.handlers.tag = h
+	return nil
+}
+
 func cmpOCIHandler(s *service) error {
 	opts := []oci.ServerOption{
 		oci.OptionMetricsCollector(s.collector),
+		oci.OptionManifestHandler(s.handlers.manifest),
+		oci.OptionBlobHandler(s.handlers.blob),
+		oci.OptionTagHandler(s.handlers.tag),
 		oci.OptionUndefinedHandler(s.handlers.undefined),
 	}
 	h, err := oci.NewServer(opts...)

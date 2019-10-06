@@ -3,10 +3,13 @@ package server
 import (
 	"fmt"
 
+	"github.com/atlaskerr/titan/http/blob"
 	"github.com/atlaskerr/titan/http/live"
+	"github.com/atlaskerr/titan/http/manifest"
 	"github.com/atlaskerr/titan/http/metrics"
 	"github.com/atlaskerr/titan/http/oci"
 	"github.com/atlaskerr/titan/http/ready"
+	"github.com/atlaskerr/titan/http/tag"
 	"github.com/atlaskerr/titan/http/titan"
 	"github.com/atlaskerr/titan/http/undefined"
 	titanMetrics "github.com/atlaskerr/titan/metrics"
@@ -23,6 +26,9 @@ type service struct {
 
 type handlers struct {
 	titan     *titan.Server
+	manifest  *manifest.Server
+	blob      *blob.Server
+	tag       *tag.Server
 	oci       *oci.Server
 	metrics   *metrics.Server
 	live      *live.Server
@@ -41,6 +47,9 @@ func newService() (*service, error) {
 		cmpMetricsHandler,
 		cmpLiveHandler,
 		cmpReadyHandler,
+		cmpTagHandler,
+		cmpManifestHandler,
+		cmpBlobHandler,
 		cmpOCIHandler,
 		cmpTitanHandler,
 	}
