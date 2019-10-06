@@ -26,6 +26,30 @@ func OptionUndefinedHandler(handler http.Handler) ServerOption {
 	return fn
 }
 
+// OptionManifestHandler sets the http.Handler to use for the unknown endpoint.
+func OptionManifestHandler(handler http.Handler) ServerOption {
+	var fn ServerOption = func(s *Server) {
+		s.handlers.manifest = handler
+	}
+	return fn
+}
+
+// OptionBlobHandler sets the http.Handler to use for the unknown endpoint.
+func OptionBlobHandler(handler http.Handler) ServerOption {
+	var fn ServerOption = func(s *Server) {
+		s.handlers.blob = handler
+	}
+	return fn
+}
+
+// OptionTagHandler sets the http.Handler to use for the unknown endpoint.
+func OptionTagHandler(handler http.Handler) ServerOption {
+	var fn ServerOption = func(s *Server) {
+		s.handlers.tag = handler
+	}
+	return fn
+}
+
 // NewServer returns a fully initialized Server.
 func NewServer(options ...ServerOption) (*Server, error) {
 	srv := &Server{}
@@ -34,6 +58,15 @@ func NewServer(options ...ServerOption) (*Server, error) {
 	}
 	if srv.metrics == nil {
 		return nil, errors.New("no metrics collector defined")
+	}
+	if srv.handlers.manifest == nil {
+		return nil, errors.New("no manifest handler defined")
+	}
+	if srv.handlers.blob == nil {
+		return nil, errors.New("no blob handler defined")
+	}
+	if srv.handlers.tag == nil {
+		return nil, errors.New("no tag handler defined")
 	}
 	if srv.handlers.undefined == nil {
 		return nil, errors.New("no unknown handler defined")
