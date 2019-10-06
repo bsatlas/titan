@@ -4,13 +4,16 @@ import (
 	"fmt"
 
 	"github.com/atlaskerr/titan/http/live"
+	"github.com/atlaskerr/titan/http/metrics"
 	"github.com/atlaskerr/titan/http/oci"
 	"github.com/atlaskerr/titan/http/ready"
 	"github.com/atlaskerr/titan/http/titan"
 	"github.com/atlaskerr/titan/http/undefined"
+
+	"github.com/prometheus/client_golang/prometheus"
 )
 
-func titanHandler(s *service) error {
+func cmpTitanHandler(s *service) error {
 	opts := []titan.ServerOption{
 		titan.OptionMetricsCollector(s.collector),
 		titan.OptionOCIHandler(s.handlers.oci),
@@ -27,8 +30,9 @@ func titanHandler(s *service) error {
 	return nil
 }
 
-func liveHandler(s *service) error {
+func cmpLiveHandler(s *service) error {
 	opts := []live.ServerOption{
+		live.OptionCore(s.core),
 		live.OptionMetricsCollector(s.collector),
 		live.OptionUndefinedHandler(s.handlers.undefined),
 	}
@@ -40,8 +44,9 @@ func liveHandler(s *service) error {
 	return nil
 }
 
-func readyHandler(s *service) error {
+func cmpReadyHandler(s *service) error {
 	opts := []ready.ServerOption{
+		ready.OptionCore(s.core),
 		ready.OptionMetricsCollector(s.collector),
 		ready.OptionUndefinedHandler(s.handlers.undefined),
 	}
@@ -53,7 +58,26 @@ func readyHandler(s *service) error {
 	return nil
 }
 
-func ociHandler(s *service) error {
+func cmpMetricsHandler(s *service) error {
+	gatherer := prometheus.NewRegistry()
+	err := gatherer.Register(s.collector)
+	if err != nil {
+		return fmt.Errorf("failed to register collector: %s", err)
+	}
+	opts := []metrics.ServerOption{
+		metrics.OptionCore(gatherer),
+		metrics.OptionMetricsCollector(s.collector),
+		metrics.OptionUndefinedHandler(s.handlers.undefined),
+	}
+	h, err := metrics.NewServer(opts...)
+	if err != nil {
+		return fmt.Errorf("failed to initialize metrics endpoint: %s", err)
+	}
+	s.handlers.metrics = h
+	return nil
+}
+
+func cmpOCIHandler(s *service) error {
 	opts := []oci.ServerOption{
 		oci.OptionMetricsCollector(s.collector),
 		oci.OptionUndefinedHandler(s.handlers.undefined),
@@ -66,7 +90,7 @@ func ociHandler(s *service) error {
 	return nil
 }
 
-func undefinedHandler(s *service) error {
+func cmpUndefinedHandler(s *service) error {
 	opts := []undefined.ServerOption{
 		undefined.OptionMetricsCollector(s.collector),
 	}

@@ -10,12 +10,14 @@ import (
 	"github.com/atlaskerr/titan/http/titan"
 	"github.com/atlaskerr/titan/http/undefined"
 	titanMetrics "github.com/atlaskerr/titan/metrics"
+	core "github.com/atlaskerr/titan/titan"
 )
 
 type component func(*service) error
 
 type service struct {
 	collector *titanMetrics.Collector
+	core      *core.Core
 	handlers  handlers
 }
 
@@ -33,12 +35,14 @@ func newService() (*service, error) {
 	// TODO(atlaskerr): Find a cleaner way to do this. Eventually there will be
 	// need to start and stop components running in goroutines and whatnot.
 	components := []component{
-		collector,
-		undefinedHandler,
-		liveHandler,
-		readyHandler,
-		ociHandler,
-		titanHandler,
+		cmpCollector,
+		cmpCore,
+		cmpUndefinedHandler,
+		cmpMetricsHandler,
+		cmpLiveHandler,
+		cmpReadyHandler,
+		cmpOCIHandler,
+		cmpTitanHandler,
 	}
 	for _, component := range components {
 		err := component(s)

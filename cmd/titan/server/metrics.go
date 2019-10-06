@@ -4,7 +4,7 @@ import (
 	titanMetrics "github.com/atlaskerr/titan/metrics"
 )
 
-func collector(s *service) error {
+func cmpCollector(s *service) error {
 	c := titanMetrics.NewCollector()
 	s.collector = c
 	return nil
