@@ -5,6 +5,7 @@
 package mock
 
 import (
+	context "context"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 )
@@ -33,15 +34,15 @@ func (m *Readiness) EXPECT() *ReadinessMockRecorder {
 }
 
 // Ready mocks base method
-func (m *Readiness) Ready() bool {
+func (m *Readiness) Ready(arg0 context.Context) bool {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Ready")
+	ret := m.ctrl.Call(m, "Ready", arg0)
 	ret0, _ := ret[0].(bool)
 	return ret0
 }
 
 // Ready indicates an expected call of Ready
-func (mr *ReadinessMockRecorder) Ready() *gomock.Call {
+func (mr *ReadinessMockRecorder) Ready(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Ready", reflect.TypeOf((*Readiness)(nil).Ready))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Ready", reflect.TypeOf((*Readiness)(nil).Ready), arg0)
 }

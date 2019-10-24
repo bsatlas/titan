@@ -5,6 +5,7 @@
 package mock
 
 import (
+	context "context"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 )
@@ -33,15 +34,15 @@ func (m *Liveness) EXPECT() *LivenessMockRecorder {
 }
 
 // Live mocks base method
-func (m *Liveness) Live() bool {
+func (m *Liveness) Live(arg0 context.Context) bool {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Live")
+	ret := m.ctrl.Call(m, "Live", arg0)
 	ret0, _ := ret[0].(bool)
 	return ret0
 }
 
 // Live indicates an expected call of Live
-func (mr *LivenessMockRecorder) Live() *gomock.Call {
+func (mr *LivenessMockRecorder) Live(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Live", reflect.TypeOf((*Liveness)(nil).Live))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Live", reflect.TypeOf((*Liveness)(nil).Live), arg0)
 }

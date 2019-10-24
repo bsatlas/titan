@@ -14,12 +14,15 @@ import (
 	"github.com/atlaskerr/titan/http/undefined"
 	titanMetrics "github.com/atlaskerr/titan/metrics"
 	core "github.com/atlaskerr/titan/titan"
+
+	opentracing "github.com/opentracing/opentracing-go"
 )
 
 type component func(*service) error
 
 type service struct {
 	collector *titanMetrics.Collector
+	tracer    opentracing.Tracer
 	core      *core.Core
 	handlers  handlers
 }
@@ -36,23 +39,31 @@ type handlers struct {
 	undefined *undefined.Server
 }
 
+var baseComponents = []component{
+	cmpCollector,
+	cmpTracer,
+	cmpCore,
+}
+
+var handlerComponents = []component{
+	cmpUndefinedHandler,
+	cmpMetricsHandler,
+	cmpLiveHandler,
+	cmpReadyHandler,
+	cmpTagHandler,
+	cmpManifestHandler,
+	cmpBlobHandler,
+	cmpOCIHandler,
+	cmpTitanHandler,
+}
+
 func newService() (*service, error) {
 	s := &service{}
 	// TODO(atlaskerr): Find a cleaner way to do this. Eventually there will be
 	// need to start and stop components running in goroutines and whatnot.
-	components := []component{
-		cmpCollector,
-		cmpCore,
-		cmpUndefinedHandler,
-		cmpMetricsHandler,
-		cmpLiveHandler,
-		cmpReadyHandler,
-		cmpTagHandler,
-		cmpManifestHandler,
-		cmpBlobHandler,
-		cmpOCIHandler,
-		cmpTitanHandler,
-	}
+	var components []component
+	components = append(components, baseComponents...)
+	components = append(components, handlerComponents...)
 	for _, component := range components {
 		err := component(s)
 		if err != nil {

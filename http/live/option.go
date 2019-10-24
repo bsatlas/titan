@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/atlaskerr/titan/metrics"
+
+	opentracing "github.com/opentracing/opentracing-go"
 )
 
 // ServerOption applies a parameter to a Server.
@@ -14,6 +16,14 @@ type ServerOption func(*Server)
 func OptionCore(core Liveness) ServerOption {
 	var fn ServerOption = func(s *Server) {
 		s.core = core
+	}
+	return fn
+}
+
+// OptionTracer sets the opentracing.Tracer to use for tracing.
+func OptionTracer(tracer opentracing.Tracer) ServerOption {
+	var fn ServerOption = func(s *Server) {
+		s.tracer = tracer
 	}
 	return fn
 }
@@ -42,6 +52,9 @@ func NewServer(options ...ServerOption) (*Server, error) {
 	}
 	if srv.core == nil {
 		return nil, errors.New("no core defined")
+	}
+	if srv.tracer == nil {
+		return nil, errors.New("no tracer defined")
 	}
 	if srv.metrics == nil {
 		return nil, errors.New("no metrics collector defined")

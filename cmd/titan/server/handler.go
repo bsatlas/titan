@@ -38,6 +38,7 @@ func cmpLiveHandler(s *service) error {
 		live.OptionCore(s.core),
 		live.OptionMetricsCollector(s.collector),
 		live.OptionUndefinedHandler(s.handlers.undefined),
+		live.OptionTracer(s.tracer),
 	}
 	h, err := live.NewServer(opts...)
 	if err != nil {
@@ -52,6 +53,7 @@ func cmpReadyHandler(s *service) error {
 		ready.OptionCore(s.core),
 		ready.OptionMetricsCollector(s.collector),
 		ready.OptionUndefinedHandler(s.handlers.undefined),
+		ready.OptionTracer(s.tracer),
 	}
 	h, err := ready.NewServer(opts...)
 	if err != nil {
