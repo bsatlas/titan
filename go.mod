@@ -11,7 +11,4 @@ require (
 	github.com/prometheus/common v0.6.0
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.3
-	go.uber.org/atomic v1.4.0 // indirect
-	go.uber.org/multierr v1.2.0 // indirect
-	go.uber.org/zap v1.10.0 // indirect
 )

@@ -35,6 +35,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	ctx = titancontext.WithNamespace(ctx, namespace)
+	req = req.WithContext(ctx)
 	var project string
 	project, req.URL.Path = shiftPath(req.URL.Path)
 	if req.URL.Path == "/" {
@@ -42,6 +43,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	ctx = titancontext.WithProject(ctx, project)
+	req = req.WithContext(ctx)
 	var repo string
 	repo, req.URL.Path = shiftPath(req.URL.Path)
 	if req.URL.Path == "/" {

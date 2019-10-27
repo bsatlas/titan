@@ -1,10 +1,10 @@
-package blob_test
+package tag_test
 
 import (
 	"testing"
 
-	"github.com/atlaskerr/titan/http/blob"
-	"github.com/atlaskerr/titan/http/blob/internal/mock"
+	"github.com/atlaskerr/titan/http/oci/tag"
+	"github.com/atlaskerr/titan/http/oci/tag/internal/mock"
 	"github.com/atlaskerr/titan/metrics"
 
 	"github.com/golang/mock/gomock"
@@ -13,10 +13,10 @@ import (
 func TestNewServerNoUndefinedHandler(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	opts := []blob.ServerOption{
-		blob.OptionMetricsCollector(metrics.NewCollector()),
+	opts := []tag.ServerOption{
+		tag.OptionMetricsCollector(metrics.NewCollector()),
 	}
-	_, err := blob.NewServer(opts...)
+	_, err := tag.NewServer(opts...)
 	if err == nil {
 		t.Fail()
 	}
@@ -25,10 +25,10 @@ func TestNewServerNoUndefinedHandler(t *testing.T) {
 func TestNewServerNoMetricsCollector(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	opts := []blob.ServerOption{
-		blob.OptionUndefinedHandler(mock.NewHandler(ctrl)),
+	opts := []tag.ServerOption{
+		tag.OptionUndefinedHandler(mock.NewHandler(ctrl)),
 	}
-	_, err := blob.NewServer(opts...)
+	_, err := tag.NewServer(opts...)
 	if err == nil {
 		t.Fail()
 	}

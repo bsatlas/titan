@@ -3,8 +3,8 @@ package manifest_test
 import (
 	"testing"
 
-	"github.com/atlaskerr/titan/http/manifest"
-	"github.com/atlaskerr/titan/http/manifest/internal/mock"
+	"github.com/atlaskerr/titan/http/oci/manifest"
+	"github.com/atlaskerr/titan/http/oci/manifest/internal/mock"
 	"github.com/atlaskerr/titan/metrics"
 
 	"github.com/golang/mock/gomock"

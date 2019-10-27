@@ -3,8 +3,8 @@ package metrics_test
 import (
 	"testing"
 
-	"github.com/atlaskerr/titan/http/metrics"
-	"github.com/atlaskerr/titan/http/metrics/internal/mock"
+	"github.com/atlaskerr/titan/http/health/metrics"
+	"github.com/atlaskerr/titan/http/health/metrics/internal/mock"
 	titanMetrics "github.com/atlaskerr/titan/metrics"
 
 	"github.com/golang/mock/gomock"

@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/atlaskerr/titan/http/live"
-	"github.com/atlaskerr/titan/http/live/internal/mock"
+	"github.com/atlaskerr/titan/http/health/live"
+	"github.com/atlaskerr/titan/http/health/live/internal/mock"
 	"github.com/atlaskerr/titan/metrics"
 
 	"github.com/golang/mock/gomock"
