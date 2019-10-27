@@ -3,13 +3,13 @@ package server
 import (
 	"fmt"
 
-	"github.com/atlaskerr/titan/http/blob"
-	"github.com/atlaskerr/titan/http/live"
-	"github.com/atlaskerr/titan/http/manifest"
-	"github.com/atlaskerr/titan/http/metrics"
+	"github.com/atlaskerr/titan/http/health/live"
+	"github.com/atlaskerr/titan/http/health/metrics"
+	"github.com/atlaskerr/titan/http/health/ready"
 	"github.com/atlaskerr/titan/http/oci"
-	"github.com/atlaskerr/titan/http/ready"
-	"github.com/atlaskerr/titan/http/tag"
+	"github.com/atlaskerr/titan/http/oci/blob"
+	"github.com/atlaskerr/titan/http/oci/manifest"
+	"github.com/atlaskerr/titan/http/oci/tag"
 	"github.com/atlaskerr/titan/http/titan"
 	"github.com/atlaskerr/titan/http/undefined"
 
@@ -96,11 +96,10 @@ func cmpManifestHandler(s *service) error {
 }
 
 func cmpBlobHandler(s *service) error {
-	opts := []blob.ServerOption{
-		blob.OptionMetricsCollector(s.collector),
+	opts := []blob.RouterOption{
 		blob.OptionUndefinedHandler(s.handlers.undefined),
 	}
-	h, err := blob.NewServer(opts...)
+	h, err := blob.NewRouter(opts...)
 	if err != nil {
 		return fmt.Errorf("failed to initialize oci endpoint: %s", err)
 	}
